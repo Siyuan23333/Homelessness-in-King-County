@@ -6,8 +6,8 @@ I begin with an overview of the homelessness problem in the US and show the dist
 
 I use datasets about homelessness counts and surveys for the US and King County. I also need datasets that associate the homelessness data with regions like census regions to explore the geographical pattern. I will use datasets from the continuum-of-care program and other government institutions that provide social services.
 
-# Analysis
-
 # Datasets
+
+# Analysis
 
 # References
