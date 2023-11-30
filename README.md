@@ -1,4 +1,4 @@
-# Part 3 Finished - STAT-451-Final-Project
+# STAT-451-Final-Project
 
 I explored the homelessness issue in King County, where Seattle is located. 
 
