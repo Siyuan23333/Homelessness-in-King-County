@@ -5,14 +5,14 @@ header <- dashboardHeader(title = "Homelessness in King")
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    menuItem("Homelessness in 2022.",
+    menuItem("Homelessness in 2022",
              tabName = "us"),
     menuItem("Who are in Homelessness",
              tabName = "who"),
     menuItem("Trend of Homelessness",
              tabName = "trend"),
-    menuItem("Resources for the Homeless",
-             tabName = "resource"),
+    menuItem("Housing for Homelessness",
+             tabName = "house"),
     menuItem("Source code",
              href = "https://github.com/Siyuan23333/STAT-451-Final-Project")
   )
@@ -38,7 +38,7 @@ body <- dashboardBody(
                 column(width = 5,
                        box(
                          title = "Input", width = NULL,
-                         selectInput("us_input", "Select Scale ",
+                         selectInput("us_scale", "Select Scale ",
                                      c("States", "CoC Regions" = "CoC"))
                        ),
                        box(
@@ -53,18 +53,18 @@ body <- dashboardBody(
             fluidPage(
               fluidRow(
                 box(
-                  title = "Description", width = 8,
+                  "Description of Inequality Issue", width = 8,
                   textOutput("who_text")
                 ),
                 box(
                   width = 4,
-                  selectInput("who_input", "Select Scale ",
-                              c("Race", "Age", "Gender"))
+                  selectInput("who_input", "Select a Demographical Category",
+                              c("Race", "Age", "Gender", "Veteran"))
                 )
               ),
               fluidRow(
                 box(
-                  title = "", width = 12, height = 600,
+                  "A bar plot and Analysis", width = 12, height = 600,
                   textOutput("who_main_text"),
                   plotOutput("who_main")
                 )
@@ -83,24 +83,37 @@ body <- dashboardBody(
               ),
               fluidRow(
                 box(
-                  width = 12, height = 300,
-                  textOutput("trend_main_text"),
+                  "A multiple line plot",
+                  width = 8, height = 600,
                   plotOutput("trend_main")
-                )
-              ),
-              fluidRow(
+                ),
                 box(
-                  width = 12, height = 300,
-                  textOutput("trend_sub_text"),
-                  plotOutput("trend_sub")
+                  "Input and Analysis",
+                  width = 4, height = 400,
+                  selectInput("trend_scale", "Select a Demographical Category",
+                              c("Race", "Age", "Gender", "Veteran")),
+                  textOutput("trend_main_text")
                 )
               )
             )
     ),
-    tabItem("resource",
-            h2("...")
+    tabItem("house",
+            fluidPage(
+              fluidRow(
+                box(
+                  "Description of the housing service",
+                  width = 12, height = 200,
+                  textOutput("house_sub_text")
+                ),
+                box(
+                  "A multiple line plot and Analysis",
+                  width = 12, height = 500,
+                  textOutput("house_main_text"),
+                  plotOutput("house_main")
+                )
+              )
+            )
     )
   )
 )
-
 dashboardPage(header, sidebar, body)
