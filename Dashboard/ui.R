@@ -1,21 +1,26 @@
 library(shiny)
 library(shinydashboard)
+library(tidyverse)
+library(ggplot2)
+library(sf)
+library(leaflet)
+library(RColorBrewer)
+library(stringr)
 
-header <- dashboardHeader(title = "Homelessness in King")
+header <- dashboardHeader(title = "Homelessness in 2022")
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    menuItem("Homelessness in 2022",
+    menuItem("Homelessness in US",
              tabName = "us"),
-    menuItem("Who are in Homelessness",
+    menuItem("Homelessness in Seattle",
              tabName = "who"),
-    menuItem("Trend of Homelessness",
-             tabName = "trend"),
-    menuItem("Housing for Homelessness",
-             tabName = "house"),
+    #    menuItem("Trend of Homelessness",
+    #             tabName = "trend"),
     menuItem("Source code",
              href = "https://github.com/Siyuan23333/STAT-451-Final-Project")
-  )
+  ),
+  hr()
 )
 
 body <- dashboardBody(
@@ -25,25 +30,31 @@ body <- dashboardBody(
               fluidRow(
                 valueBoxOutput("us_total"),
                 valueBoxOutput("us_rate"),
-                infoBox("PIT Count", "Defintion of the PIT count")
+                box(
+                  width = 4,
+                  selectInput("us_scale", "Select Scale ",
+                              c("States", "CoC Regions"))
+                )
               ),
               fluidRow(
                 column(width = 7,
                        box(
-                         title = "Distribution of Homelessness in the US", width = NULL,
-                         textOutput("us_main_text"),
-                         plotOutput("us_main", height = 500)
+                         title = NULL, id = "us_main_text", width = NULL, height = 700,
+                         h3("Homelessness is Unevenly Distributed Across the U.S."),
+                         textOutput("us_main_text1"),
+                         h4(""),
+                         textOutput("us_main_text2"),
+                         h3(""),
+                         leafletOutput("us_main")
                        )
                 ),
                 column(width = 5,
                        box(
-                         title = "Input", width = NULL,
-                         selectInput("us_scale", "Select Scale ",
-                                     c("States", "CoC Regions" = "CoC"))
+                         width = NULL,
+                         plotOutput("us_sub", height = 530)
                        ),
-                       box(
-                         title = "Top regions", width = NULL,
-                         plotOutput("us_sub", height = 440)
+                       box(title = "Underestimated Number", width = NULL, height = 130,
+                           textOutput("us_sub_text")
                        )
                 )
               )
@@ -52,68 +63,71 @@ body <- dashboardBody(
     tabItem("who",
             fluidPage(
               fluidRow(
-                box(
-                  "Description of Inequality Issue", width = 8,
-                  textOutput("who_text")
+                column(width = 8,
+                       fluidRow(
+                         valueBoxOutput("who_total", width = 6),
+                         valueBoxOutput("who_rate", width = 6)),
+                       box(
+                         width = NULL,
+                         h3("Homelessness is Unevenly Distributed in Seattle/King County"),
+                         textOutput("who_main_text1"),
+                         h4(""),
+                         textOutput("who_main_text2")
+                       ),
+                       box(
+                         width = NULL, height = 420,
+                         h4("Homelessness in Different Race Groups"),
+                         plotOutput("who_main", height = 370)
+                       )
                 ),
-                box(
-                  width = 4,
-                  selectInput("who_input", "Select a Demographical Category",
-                              c("Race", "Age", "Gender", "Veteran"))
-                )
-              ),
-              fluidRow(
-                box(
-                  "A bar plot and Analysis", width = 12, height = 600,
-                  textOutput("who_main_text"),
-                  plotOutput("who_main")
-                )
-              )
-            )
-    ),
-    tabItem("trend",
-            fluidPage(
-              fluidRow(
-                valueBoxOutput("trend_total"),
-                valueBoxOutput("trend_rate"),
-                box(
-                  width = 4, height = 100,
-                  numericInput("trend_year", "Which Year's Data to Show", min = 2007, max = 2022, value = 2022)
-                )
-              ),
-              fluidRow(
-                box(
-                  "A multiple line plot",
-                  width = 8, height = 600,
-                  plotOutput("trend_main")
-                ),
-                box(
-                  "Input and Analysis",
-                  width = 4, height = 400,
-                  selectInput("trend_scale", "Select a Demographical Category",
-                              c("Race", "Age", "Gender", "Veteran")),
-                  textOutput("trend_main_text")
-                )
-              )
-            )
-    ),
-    tabItem("house",
-            fluidPage(
-              fluidRow(
-                box(
-                  "Description of the housing service",
-                  width = 12, height = 200,
-                  textOutput("house_sub_text")
-                ),
-                box(
-                  "A multiple line plot and Analysis",
-                  width = 12, height = 500,
-                  textOutput("house_main_text"),
-                  plotOutput("house_main")
+                column(width = 4,
+                       box(
+                         "Homelessness in Different Gender Groups",
+                         width = NULL, height = 230,
+                         plotOutput("who_sub1", width = 350, height = 190)
+                       ),
+                       box(
+                         "Homelessness in Veteran Groups",
+                         width = NULL, height = 230,
+                         plotOutput("who_sub2", width = 350, height = 190)
+                       ),
+                       box(
+                         "Homelessness in Different Age Groups",
+                         width = NULL, height = 320,
+                         plotOutput("who_sub3", width = 350, height = 280)
+                       ),
                 )
               )
             )
     )
+    # tabItem("trend",
+    #   fluidPage(
+    #     fluidRow(
+    #       valueBoxOutput("trend_total"),
+    #       valueBoxOutput("trend_rate"),
+    #       box(
+    #         width = 4, height = 100,
+    #         numericInput("trend_year", "Which Year's Data to Show", 
+    #                      min = 2007, max = 2022, value = 2022)
+    #       )
+    #     ),
+    #     fluidRow(
+    #       box(
+    #         "A multiple line plot",
+    #         width = 8, height = 600,
+    #         plotOutput("trend_main")
+    #       ),
+    #       box(
+    #         "Input and Analysis",
+    #         width = 4, height = 400,
+    #         selectInput("trend_scale", "Select a Demographical Category",
+    #                     c("Race", "Age", "Gender", "Veteran")),
+    #         textOutput("trend_main_text")
+    #       )
+    #     )
+    #   )
+    # )
   )
 )
+
 dashboardPage(header, sidebar, body)
